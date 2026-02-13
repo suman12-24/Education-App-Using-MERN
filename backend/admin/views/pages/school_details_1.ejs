@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- include head -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>School Details</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/Template/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/Template/dist/css/adminlte.min.css">
+    <!-- Custom CSS -->
+    <style>
+        .cover-picture {
+            width: 100%;
+            height: 150px;
+            /* Adjust height as needed */
+            overflow: hidden;
+            position: relative;
+            background: #ddd;
+            /* Fallback color */
+        }
+
+        .cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-container {
+            position: relative;
+            margin-top: -50px;
+            /* Adjust to control overlap */
+            text-align: center;
+        }
+
+        .profile-user-img {
+            width: 100px;
+            /* Adjust size */
+            height: 100px;
+            border: 3px solid white;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-username {
+            margin-top: 10px;
+            /* Space below profile picture */
+            font-weight: bold;
+        }
+
+
+
+        /* Restrict image within the modal */
+        .modal-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-height: 80vh;
+            /* Limit modal height */
+            overflow: hidden;
+            /* Prevent scrolling */
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            /* Ensure image fits within modal width */
+            max-height: 75vh;
+            /* Ensure image fits within modal height */
+            object-fit: contain;
+            /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__shake" src="/Template/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60"
+                width="60">
+        </div>
+
+        <!-- Include Navbar -->
+        <%- include('../layouts/navbar') %>
+
+            <!-- include sidebar -->
+            <%- include('../layouts/sidebar') %>
+
+
+                <!-- Content Wrapper. Contains page content -->
+                <div class="content-wrapper">
+                    <!-- Content Header (Page header) -->
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <h1>Profile</h1>
+                                </div>
+                                <div class="col-sm-6">
+
+                                    <ol class="breadcrumb float-sm-right">
+                                        <li class="breadcrumb-item">
+                                            <% if (!school.isApprovedByAdmin) { %>
+                                                <button id="toggleButton" class="btn btn-primary btn-md">
+                                                    Approve
+                                                </button>
+                                                <% } else { %>
+                                                    <button id="toggleButton" class="btn btn-danger btn-md">
+                                                        Deactivate
+                                                    </button>
+                                                    <% } %>
+                                        </li>
+
+                                        <!-- <li class="breadcrumb-item"><button class="btn btn-danger btn-md">
+                                                Reject
+                                            </button></li> -->
+
+
+                                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                        <li class="breadcrumb-item active">User Profile</li> -->
+                                    </ol>
+                                </div>
+                            </div>
+                        </div><!-- /.container-fluid -->
+                    </section>
+
+                    <!-- Main content -->
+                    <section class="content">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-3">
+
+                                    <!-- Profile Image -->
+
+
+                                    <div class="card card-primary card-outline">
+                                        <div class="card-body box-profile">
+                                            <!-- Cover Picture -->
+                                            <div class="cover-picture text-center position-relative">
+                                                <!-- Cover Picture -->
+                                                <img class="cover-img"
+                                                    src="/api/v1/uploads/<%= school.coverPicture.image %>"
+                                                    alt="Cover Picture"
+                                                    onclick="openImageModal('/api/v1/uploads/<%= school.coverPicture.image %>', true, '<%= school.id %>', 'cover')"
+                                                    style="cursor: pointer;">
+                                            </div>
+
+                                            <!-- Profile Picture - Positioned over the cover image -->
+                                            <div class="text-center profile-container" style="margin-top: -60px;">
+                                                <!-- Profile Picture -->
+                                                <img class="profile-user-img img-fluid img-circle"
+                                                    src="/api/v1/uploads/<%= school.profilePicture.image %>"
+                                                    alt="User profile picture"
+                                                    onclick="openImageModal('/api/v1/uploads/<%= school.profilePicture.image %>', true, '<%= school.id %>', 'profile')"
+                                                    style="cursor: pointer;">
+                                            </div>
+
+                                            <h3 class="profile-username text-center">
+                                                <%= school.name %>
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- /.card -->
+
+                                    <!-- About Me Box -->
+                                    <div class="card card-primary">
+                                        <div class="card-header">
+                                            <h3 class="card-title">About School</h3>
+                                        </div>
+                                        <!-- /.card-header -->
+                                        <div class="card-body">
+
+                                            <div class="card bg-light p-3">
+                                                <h5 class="text-primary">
+                                                    <i class="fas fa-book text-primary mr-2 fa-lg"></i> Affiliated To
+                                                </h5>
+                                                <p class="text-muted mt-1 pl-4">
+                                                    <%= school.affiliatedTo %>
+                                                </p>
+                                            </div>
+
+                                            <hr>
+                                            <div class="card bg-light p-3">
+                                                <h5 class="text-primary">
+                                                    <i class="fas fa-map-marker-alt mr-2"></i> Location
+                                                </h5>
+                                                <p class="mb-1"><strong>Street:</strong>
+                                                    <%= school.reachUs.address.street %>
+                                                </p>
+                                                <p class="mb-1"><strong>Region:</strong>
+                                                    <%= school.reachUs.address.region %>
+                                                </p>
+                                                <p class="mb-1"><strong>District:</strong>
+                                                    <%= school.reachUs.address.district %>
+                                                </p>
+                                                <p class="mb-0"><strong>State:</strong>
+                                                    <%= school.reachUs.address.state %>
+                                                </p>
+                                                <p class="mb-0"><strong>PIN Code:</strong>
+                                                    <%= school.reachUs.address.pin %>
+                                                </p>
+                                            </div>
+                                            <div class="card bg-light p-3">
+                                                <h5 class="text-primary">
+                                                    <i class="fas fa-user-tie text-primary mr-2 fa-lg"></i> Contact
+                                                    Person
+                                                </h5>
+                                                <p class="mb-1"><strong>Name:</strong>
+                                                    <%= school.contactPersonName %>
+                                                </p>
+                                                <p class="mb-1"><strong>Phone:</strong>
+                                                    <%= school.contactPersonPhone %>
+                                                </p>
+                                            </div>
+
+
+
+
+
+                                            <strong><i class="fas fa-map-marker-alt mr-1"></i> Contact
+                                                Person</strong>
+
+                                            <p class="text-muted">
+                                                <%= school.reachUs.contactPersonName %>
+                                            </p>
+
+                                            <hr>
+
+                                            <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
+
+                                            <p class="text-muted">
+                                                <span class="tag tag-danger">UI Design</span>
+                                                <span class="tag tag-success">Coding</span>
+                                                <span class="tag tag-info">Javascript</span>
+                                                <span class="tag tag-warning">PHP</span>
+                                                <span class="tag tag-primary">Node.js</span>
+                                            </p>
+
+                                            <hr>
+
+                                            <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
+
+                                            <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing
+                                                elit. Etiam fermentum enim neque.</p>
+                                        </div>
+                                        <!-- /.card-body -->
+                                    </div>
+                                    <!-- /.card -->
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-md-9">
+                                    <div class="card">
+                                        <div class="card-header p-2">
+                                            <ul class="nav nav-pills">
+                                                <li class="nav-item"><a class="nav-link active" href="#Facilities"
+                                                        data-toggle="tab">Facilities</a></li>
+                                                <li class="nav-item"><a class="nav-link" href="#image_gallery"
+                                                        data-toggle="tab">Image Gallery</a></li>
+                                                <li class="nav-item"><a class="nav-link" href="#achievements"
+                                                        data-toggle="tab">Achievements</a></li>
+                                                <li class="nav-item"><a class="nav-link" href="#settings"
+                                                        data-toggle="tab">Settings</a></li>
+                                            </ul>
+                                        </div><!-- /.card-header -->
+                                        <div class="card-body">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="Facilities">
+                                                    <div class="facilities-cards">
+
+
+                                                        <!-- Facility 1 -->
+                                                        <% Object.keys(school.facilities).forEach(function(key) { %>
+                                                            <div class="facility-card card mb-4 col-12">
+                                                                <div class="card-header">
+                                                                    <h5 style="font-weight: bold;">
+                                                                        <%= key %>
+                                                                    </h5> <!-- Display the name of each facility -->
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <div class="sub-facility-cards row">
+                                                                        <!-- Iterate through the fields for the current facility -->
+                                                                        <% school.facilities[key].fields.forEach(function(field)
+                                                                            { %>
+                                                                            <!-- Display each sub-facility -->
+                                                                            <div class="sub-facility col-md-6">
+                                                                                <div class="card">
+                                                                                    <!-- Placeholder for image, replace with actual path
+                                                                                    <img src="path_to_subfacility1_image.jpg"
+                                                                                        class="card-img-top"
+                                                                                        alt="<%= field.title %>"> -->
+                                                                                    <div class="card-body">
+                                                                                        <h6 class="card-title"
+                                                                                            style="font-weight: bold;">
+                                                                                            <%= field.title %>
+                                                                                        </h6>
+                                                                                        <!-- Display the field's title -->
+                                                                                        <p class="card-text">
+                                                                                            <%= field.description %>
+                                                                                        </p>
+                                                                                        <!-- Display the field's description -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <% }); %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+
+                                                    </div>
+                                                </div>
+
+
+
+
+
+                                                <div class="tab-pane" id="image_gallery">
+                                                    <!-- Image Gallery Section -->
+                                                    <div class="image-gallery row">
+                                                        <% school.imageGallery.forEach(image=> { %>
+                                                            <div class="col-md-4 mb-4">
+                                                                <div class="card h-100">
+                                                                    <!-- Clickable Image -->
+                                                                    <!-- <img src="/api/v1/uploads/<%= encodeURIComponent(image.image) %>"
+                                                                        class="img-fluid card-img-top"
+                                                                        alt="Gallery Image"
+                                                                        onclick="openImageModal('/api/v1/uploads/<%= encodeURIComponent(image.image) %>')"
+                                                                        style="cursor: pointer;"> -->
+
+                                                                    <img src="/api/v1/uploads/<%= encodeURIComponent(image.image) %>"
+                                                                        class="img-fluid card-img-top w-100"
+                                                                        alt="Gallery Image"
+                                                                        onclick="openImageModal('/api/v1/uploads/<%= encodeURIComponent(image.image) %>')"
+                                                                        style="cursor: pointer; height: 200px; object-fit: cover; border-radius: 10px;">
+
+
+                                                                    <% if (image) { %>
+                                                                        <div class="card-body text-center">
+                                                                            <% if (!image.isApproved) { %>
+                                                                                <button
+                                                                                    id="toggleImageButton-<%= image.image.replace(/\./g, '-').replace(/\s/g, '-') %>"
+                                                                                    class="btn btn-primary btn-sm toggle-image-btn"
+                                                                                    data-image-name="<%= image.image %>"
+                                                                                    aria-label="Approve Image">
+                                                                                    Approve
+                                                                                </button>
+                                                                                <% } else { %>
+                                                                                    <button
+                                                                                        id="toggleImageButton-<%= image.image.replace(/\./g, '-').replace(/\s/g, '-') %>"
+                                                                                        class="btn btn-danger btn-sm toggle-image-btn"
+                                                                                        data-image-name="<%= image.image %>"
+                                                                                        aria-label="Reject Image">
+                                                                                        Reject
+                                                                                    </button>
+                                                                                    <% } %>
+                                                                        </div>
+
+                                                                        <script>
+                                                                            document.addEventListener("DOMContentLoaded", () => {
+                                                                                const toggleButtons = document.querySelectorAll(".toggle-image-btn");
+                                                                                const schoolId = "<%= school.id %>";
+
+                                                                                toggleButtons.forEach(button => {
+                                                                                    button.addEventListener("click", async () => {
+                                                                                        try {
+                                                                                            const imageName = button.getAttribute("data-image-name");
+
+                                                                                            const response = await fetch(`/admin/approve-deactivate-galleryImage`, {
+                                                                                                method: "POST",
+                                                                                                headers: { "Content-Type": "application/json" },
+                                                                                                body: JSON.stringify({ imageName: imageName, schoolId: schoolId })
+                                                                                            });
+
+                                                                                            const data = await response.json();
+
+                                                                                            if (data.success) {
+                                                                                                // Update button appearance based on new status
+                                                                                                if (data.newStatus) {
+                                                                                                    button.textContent = "Reject";
+                                                                                                    button.classList.remove("btn-primary");
+                                                                                                    button.classList.add("btn-danger");
+                                                                                                } else {
+                                                                                                    button.textContent = "Approve";
+                                                                                                    button.classList.remove("btn-danger");
+                                                                                                    button.classList.add("btn-primary");
+                                                                                                }
+                                                                                            } else {
+                                                                                                alert("Failed to update image status: " + data.message);
+                                                                                            }
+                                                                                        } catch (error) {
+                                                                                            console.error("Error updating image status:", error);
+                                                                                            alert("An error occurred while updating the image status");
+                                                                                        }
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        </script>
+                                                                        <% } %>
+
+
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="tab-pane" id="achievements">
+                                                    <div class="row">
+                                                        <% school.successStories.forEach((story)=> { %>
+                                                            <div class="col-md-6">
+                                                                <div class="card">
+                                                                    <img class="card-img-top"
+                                                                        src="/api/v1/uploads/<%= story.image.name %>"
+                                                                        alt="Success Story">
+                                                                    <div class="card-body">
+                                                                        <h5 class="card-title">
+                                                                            <%= story.title ? story.title
+                                                                                : "Success Story" %>
+                                                                        </h5>
+                                                                        <p class="card-text">
+                                                                            <%= story.description %>
+                                                                        </p>
+
+                                                                        <!-- Approve Button (if not approved) -->
+                                                                        <% if (!story.image.isApproved) { %>
+                                                                            <button class="btn btn-primary approve-btn"
+                                                                                data-id="<%= story._id %>">Approve</button>
+                                                                            <% } else { %>
+                                                                                <button class="btn btn-success"
+                                                                                    disabled>Approved</button>
+                                                                                <% } %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="tab-pane" id="settings">
+                                                    <form class="form-horizontal">
+                                                        <div class="form-group row">
+                                                            <label for="inputName"
+                                                                class="col-sm-2 col-form-label">Name</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="email" class="form-control" id="inputName"
+                                                                    placeholder="Name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="inputEmail"
+                                                                class="col-sm-2 col-form-label">Email</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="email" class="form-control" id="inputEmail"
+                                                                    placeholder="Email">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="inputName2"
+                                                                class="col-sm-2 col-form-label">Name</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" id="inputName2"
+                                                                    placeholder="Name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="inputExperience"
+                                                                class="col-sm-2 col-form-label">Experience</label>
+                                                            <div class="col-sm-10">
+                                                                <textarea class="form-control" id="inputExperience"
+                                                                    placeholder="Experience"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="inputSkills"
+                                                                class="col-sm-2 col-form-label">Skills</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="text" class="form-control" id="inputSkills"
+                                                                    placeholder="Skills">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="offset-sm-2 col-sm-10">
+                                                                <div class="checkbox">
+                                                                    <label>
+                                                                        <input type="checkbox"> I agree to the <a
+                                                                            href="#">terms and conditions</a>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="offset-sm-2 col-sm-10">
+                                                                <button type="submit"
+                                                                    class="btn btn-danger">Submit</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <!-- /.tab-pane -->
+
+                                                <!-- Bootstrap Modal -->
+                                                <div class="modal fade" id="imageModal" tabindex="-1"
+                                                    aria-labelledby="imageModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="imageModalLabel">Image
+                                                                    Preview</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body text-center">
+                                                                <img id="modalImage" class="img-fluid rounded"
+                                                                    alt="Preview">
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button id="approveBtn"
+                                                                    class="btn btn-primary d-none">Approve</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <!-- /.tab-content -->
+                                        </div><!-- /.card-body -->
+                                    </div>
+                                    <!-- /.card -->
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+                        </div><!-- /.container-fluid -->
+                    </section>
+                    <!-- /.content -->
+                </div>
+
+                <!-- /.content-wrapper -->
+
+                <!-- include footer -->
+                <%- include('../layouts/footer') %>
+
+
+                    <!-- Control Sidebar -->
+                    <aside class="control-sidebar control-sidebar-dark">
+                        <!-- Control sidebar content goes here -->
+                    </aside>
+                    <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
+    <!------------------------------------------------------------ scripts ------------------------------------------------------>
+    <!-- jQuery -->
+    <script src="/Template/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/Template/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/Template/dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="/Template/dist/js/demo.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const approveBtn = document.getElementById("approveBtn");
+
+            async function toggleApproval(schoolId, imageType) {
+                try {
+                    const isApproved = approveBtn.classList.contains("btn-primary");
+
+                    const response = await fetch(`/admin/approve-deactivate-profile-cover-image`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ schoolId: schoolId, imageType: imageType })
+                    });
+
+                    const { success, newStatus } = await response.json();
+                    console.log(success, newStatus);
+
+                    if (success) {
+                        approveBtn.textContent = newStatus ? "Disapprove" : "Approve";
+                        approveBtn.classList.toggle("btn-danger", newStatus);
+                        approveBtn.classList.toggle("btn-primary", !newStatus);
+                    } else {
+                        alert("Failed to update status");
+                    }
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                }
+            }
+
+            function openImageModal(imageUrl, isApprovable, schoolId, imageType) {
+                document.getElementById("modalImage").src = imageUrl;
+
+                if (isApprovable) {
+                    approveBtn.classList.remove("d-none");
+                    approveBtn.onclick = () => toggleApproval(schoolId, imageType);
+                } else {
+                    approveBtn.classList.add("d-none");
+                }
+
+                $('#imageModal').modal('show');
+            }
+
+            // Make openImageModal globally accessible
+            window.openImageModal = openImageModal;
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleButton = document.querySelector("#toggleButton");
+            const schoolId = "<%= school.id %>";  // Ensure you pass the correct school ID
+
+            toggleButton.addEventListener("click", async () => {
+                try {
+                    const isApproved = toggleButton.classList.contains("btn-primary");
+
+                    const response = await fetch(`/admin/approve-deactivate-school`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ schoolId: schoolId })
+                    });
+
+                    const { success, newStatus } = await response.json();
+                    console.log(success, newStatus);
+                    if (success) {
+                        toggleButton.textContent = newStatus ? "Deactivate" : "Approve";
+                        toggleButton.classList.toggle("btn-danger", newStatus);
+                        toggleButton.classList.toggle("btn-primary", !newStatus);
+                    } else {
+                        alert("Failed to update status");
+                    }
+                } catch (error) {
+                    console.error("Error updating status:", error);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

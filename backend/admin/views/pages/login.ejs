@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- include head -->
+<%- include('../layouts/head') %>
+
+    <body class="hold-transition login-page">
+        <div class="wrapper">
+            <div class="login-box">
+                <div class="login-logo">
+                    <a href="#"><b>Welcome To Guidanz</b></a>
+                </div>
+                <!-- /.login-logo -->
+                <div class="card">
+                    <div class="card-body login-card-body">
+                        <p class="login-box-msg">Admin Login!</p>
+
+                        <!-- <form action="" method="post"> -->
+                        <div class="input-group mb-3">
+                            <input type="email" id="email" class="form-control" placeholder="Email">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="otpContainer">
+                            <div class="input-group mb-3">
+                                <input type="password" id="otp" class="form-control" placeholder="Enter OTP">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-lock"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- <div class="col-8">
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" id="remember">
+                                        <label for="remember">
+                                            Remember Me
+                                        </label>
+                                    </div>
+                                </div> -->
+                            <!-- /.col -->
+                            <div class="col-12">
+                                <button id="getOtpBtn" class="btn btn-primary btn-block">Get OTP</button>
+                                <button id="verifyOtpBtn" class="btn btn-primary btn-block">Verify OTP</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- </form> -->
+
+                        <div class="social-auth-links text-center mb-3">
+                            <p>- OR -</p>
+                            <!-- <a href="#" class="btn btn-block btn-primary">
+                                <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+                            </a> -->
+                            <a href="#" class="btn btn-block btn-danger">
+                                <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+                            </a>
+                        </div>
+                        <!-- /.social-auth-links -->
+
+                        <!-- <p class="mb-1">
+                            <a href="forgot-password.html">I forgot my password</a>
+                        </p>
+                        <p class="mb-0">
+                            <a href="register.html" class="text-center">Register a new membership</a>
+                        </p> -->
+                    </div>
+                    <!-- /.login-card-body -->
+                </div>
+            </div>
+            <!-- /.login-box -->
+
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- include Scripts -->
+        <%- include('../layouts/scripts') %>
+            <script>
+                window.onload = () => {
+                    document.querySelector('#verifyOtpBtn').style.display = 'none';
+                    document.querySelector('#otpContainer').style.display = 'none';
+                    document.querySelector('#getOtpBtn').addEventListener('click', async () => {
+                        const email = document.querySelector('#email').value;
+
+                        try {
+                            const response = await fetch('/admin', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ email: email }),  // Stringify the data before sending
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            // Parse the JSON response
+                            const result = await response.json();
+
+                            if (result.success) {
+                                console.log("result", result);
+                                document.querySelector('#otpContainer').style.display = 'block';
+                                document.querySelector('#getOtpBtn').style.display = 'none';
+                                document.querySelector('#email').disabled = true;
+                                document.querySelector('#verifyOtpBtn').style.display = 'block';
+                            } else {
+                                alert('Invalid credentials! Please try again.');
+                            }
+                        } catch (error) {
+                            console.error('Error submitting form:', error);
+                            alert('An error occurred while submitting the form. Please try again later.');
+                        }
+                    });
+
+                    document.querySelector('#verifyOtpBtn').addEventListener('click', async () => {
+                        try {
+                            const otp = document.querySelector('#otp').value;
+                            const response = await fetch('/admin/otp-verification/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ enteredOtp: otp }),  // Stringify the data before sending
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            // Parse the JSON response
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                alert('Login successful!');
+                                // Redirect to another page if needed
+                                window.location.href = '/admin/home';  // Or another page
+                            }
+
+                        } catch (error) {
+                            console.error('Error submitting form:', error);
+                            alert('An error occurred while submitting the form. Please try again later.');
+                        }
+                    });
+                }
+
+
+            </script>
+
+
+    </body>
+
+</html>
